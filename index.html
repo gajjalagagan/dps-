@@ -273,6 +273,16 @@ section{
     border-radius:20px;
     margin-bottom:20px;
 }
+/* Enable true 3D */
+.sports-grid{
+    perspective:1000px;
+}
+
+.sport-card{
+    transform-style:preserve-3d;
+    transition:transform 0.2s ease;
+}
+
 
 .sport-card h4{
     color:#3cff9b;
@@ -320,6 +330,29 @@ footer{
     .split img{margin-bottom:30px;}
     .sports-grid{grid-template-columns:1fr;}
 }
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:40px;
+    text-align:center;
+}
+
+.stat{
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(16px);
+    padding:40px;
+    border-radius:24px;
+}
+
+.stat h3{
+    font-size:48px;
+    color:#3cff9b;
+}
+nav ul li a.active{
+    color:#3cff9b;
+    border-bottom:2px solid #3cff9b;
+    padding-bottom:4px;
+}
 </style>
 </head>
 
@@ -342,10 +375,14 @@ footer{
 </nav>
 
 <section class="hero" id="home">
-    <div class="hero-content">
-        <img src="logo.jpg" class="hero-logo" alt="DPS Nadergul Logo">
-        <h2>Delhi Public School, Nadergul</h2>
-        <p>Green Excellence in Education, Sports & Global Leadership</p>
+    <div class="hero-layout">
+
+        <div class="hero-content">
+            <img src="logo.jpg" class="hero-logo" alt="DPS Nadergul Logo">
+            <h2>Delhi Public School, Nadergul</h2>
+            <p>Green Excellence in Education, Sports & Global Leadership</p>
+        </div>
+
     </div>
 </section>
 
@@ -374,6 +411,28 @@ footer{
 </div>
 </div>
 </section>
+<section id="stats">
+    <h2 class="section-title">Academic Impact</h2>
+    <div class="stats">
+        <div class="stat">
+            <h3 data-count="98">0</h3>
+            <p>Board Results %</p>
+        </div>
+        <div class="stat">
+            <h3 data-count="120">0</h3>
+            <p>Expert Faculty</p>
+        </div>
+        <div class="stat">
+            <h3 data-count="45">0</h3>
+            <p>Olympiad Awards</p>
+        </div>
+        <div class="stat">
+            <h3 data-count="5000">0</h3>
+            <p>Successful Alumni</p>
+        </div>
+    </div>
+</section>
+
 
 <section id="sports">
 <h2 class="section-title">Sports Excellence</h2>
@@ -446,10 +505,59 @@ footer{
     });
     
     document.querySelectorAll('.card, .split img, .sport-card').forEach(el => observer.observe(el));
+    const counters=document.querySelectorAll('[data-count]');
+const speed=120;
+
+counters.forEach(counter=>{
+let update=()=>{
+let target=+counter.dataset.count;
+let current=+counter.innerText;
+let inc=Math.ceil(target/speed);
+if(current<target){
+counter.innerText=current+inc;
+setTimeout(update,30);
+}else{
+counter.innerText=target;
+}
+};
+update();
+});
+document.querySelectorAll(".sport-card").forEach(card=>{
+    card.addEventListener("mousemove", e=>{
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const rotateX = ((y / rect.height) - 0.5) * -12;
+        const rotateY = ((x / rect.width) - 0.5) * 12;
+
+        card.style.transform =
+            `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    });
+
+    card.addEventListener("mouseleave", ()=>{
+        card.style.transform =
+            "rotateX(0deg) rotateY(0deg) scale(1)";
+    });
+});
+const links=document.querySelectorAll("nav ul li a");
+window.addEventListener("scroll",()=>{
+let fromTop=window.scrollY+120;
+links.forEach(link=>{
+let section=document.querySelector(link.getAttribute("href"));
+if(section.offsetTop<=fromTop && section.offsetTop+section.offsetHeight>fromTop){
+links.forEach(l=>l.classList.remove("active"));
+link.classList.add("active");
+}
+});
+});
 </script>
+
+
 
 </body>
 </html>
+
 
 
 
